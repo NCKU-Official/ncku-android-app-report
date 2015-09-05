@@ -23,6 +23,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import tw.edu.ncku.android.report.client.NckuReportService;
 import tw.edu.ncku.android.report.client.model.Category;
+import tw.edu.ncku.android.report.client.model.CategoryResponse;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -46,11 +47,11 @@ public class MainActivity extends AppCompatActivity
 
         mCompositeSubscription = new CompositeSubscription();
         NckuReportService mNckuReportService = new NckuReportService();
-        final Observable<List<Category>> fetchDataObservable = mNckuReportService.fetchCategories();
+        final Observable<CategoryResponse> fetchDataObservable = mNckuReportService.fetchCategories();
         mCompositeSubscription.add(fetchDataObservable
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Category>>() {
+                .subscribe(new Subscriber<CategoryResponse>() {
 
                     @Override
                     public void onCompleted() {
@@ -63,8 +64,8 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     @Override
-                    public void onNext(List<Category> categories) {
-                        Log.d("Main", categories.get(0).getName());
+                    public void onNext(CategoryResponse categoryResponse) {
+                        Log.d("Main", categoryResponse.getData().get(0).getName());
                     }
                 }));
 

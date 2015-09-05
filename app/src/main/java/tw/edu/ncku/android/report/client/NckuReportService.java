@@ -1,12 +1,12 @@
 package tw.edu.ncku.android.report.client;
 
 import java.util.List;
-import rx.Observable;
 
-import retrofit.Retrofit;
-import retrofit.GsonConverterFactory;
+import retrofit.RestAdapter;
 import retrofit.http.GET;
+import rx.Observable;
 import tw.edu.ncku.android.report.client.model.Category;
+import tw.edu.ncku.android.report.client.model.CategoryResponse;
 
 public class NckuReportService {
 
@@ -14,21 +14,19 @@ public class NckuReportService {
     private final NckuReport mNckuReport;
 
     public NckuReportService() {
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(API_URL)
                 .build();
-        mNckuReport = retrofit.create(NckuReport.class);
+        mNckuReport = restAdapter.create(NckuReport.class);
     }
 
     public interface NckuReport {
 
         @GET("/category")
-        Observable<List<Category>> listCategories();
+        Observable<CategoryResponse> listCategories();
     }
 
-    public Observable<List<Category>> fetchCategories() {
+    public Observable<CategoryResponse> fetchCategories() {
         return mNckuReport.listCategories();
     }
 }
