@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,20 +27,16 @@ import java.util.Locale;
 
 public class ContentFragment extends Fragment {
 
-    private ProgressBar progressBar;
-    private ValueCallback<Uri> mUploadMessage;
-    private final static int FILECHOOSER_RESULTCODE = 1;
-
-
     private static final String TAG = ContentFragment.class.getSimpleName();
 
     public static final int INPUT_FILE_REQUEST_CODE = 1;
-    public static final String EXTRA_FROM_NOTIFICATION = "EXTRA_FROM_NOTIFICATION";
 
     private WebView mWebView;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
 
+//    TODO: progress bar
+//    TODO: app icon
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -205,45 +199,4 @@ public class ContentFragment extends Fragment {
         mFilePathCallback.onReceiveValue(results);
         mFilePathCallback = null;
     }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-        super.onViewCreated(view, savedInstanceState);
-//        webview.setWebChromeClient(new WebChromeClient() {
-//            // For Android 3.0+
-//            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-//
-//                mUploadMessage = uploadMsg;
-//                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-//                i.addCategory(Intent.CATEGORY_OPENABLE);
-//                i.setType("image/*");
-//                startActivityForResult(Intent.createChooser(i, "File Chooser"), FILECHOOSER_RESULTCODE);
-//            }
-//
-//            // For Android 3.0+
-//            public void openFileChooser(ValueCallback uploadMsg, String acceptType) {
-//                mUploadMessage = uploadMsg;
-//                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-//                i.addCategory(Intent.CATEGORY_OPENABLE);
-//                i.setType("*/*");
-//                startActivityForResult(
-//                        Intent.createChooser(i, "File Browser"),
-//                        FILECHOOSER_RESULTCODE);
-//            }
-//
-//            //For Android 4.1
-//            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
-//                mUploadMessage = uploadMsg;
-//                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-//                i.addCategory(Intent.CATEGORY_OPENABLE);
-//                i.setType("image/*");
-//                startActivityForResult(
-//                        Intent.createChooser(i, "File Chooser"),
-//                        FILECHOOSER_RESULTCODE);
-//
-//            }
-//        });
-    }
-
 }

@@ -7,7 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +24,6 @@ import tw.edu.ncku.android.report.storage.NckuReportStorage;
 
 public class MainActivity extends AppCompatActivity {
 
-    //Defining Variables
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
@@ -148,10 +146,7 @@ public class MainActivity extends AppCompatActivity {
             // set title
             toolbar.setSubtitle(category.getName());
 
-            // add action menu
-            toolbar.getMenu().clear();
-            toolbar.getMenu().add("test");
-
+            // Action menu:
             // View report action
             MenuItem viewItem = toolbar.getMenu().add(Constants.MENU_ITEM_VIEW_REPORT);
             viewItem.setIcon(R.drawable.ic_action_action_home);
@@ -187,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment);
             fragmentTransaction.commit();
-        } else if(intentAction.compareTo(Constants.INTENT_ACTION_MENU_VIEW) == 0) {
+        } else if (intentAction.compareTo(Constants.INTENT_ACTION_MENU_VIEW) == 0) {
 
             String category_json = intent.getStringExtra(Constants.INTENT_EXTRA_CATEGORY);
             Gson gson = new Gson();
