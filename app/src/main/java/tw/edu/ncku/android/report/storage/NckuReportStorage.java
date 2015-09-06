@@ -10,6 +10,7 @@ import tw.edu.ncku.android.report.client.model.CategoryResponse;
 public class NckuReportStorage {
 
     private static NckuReportStorage mNckuReportStorage;
+    private CategoryResponse mCategoryResponse;
     private static Context c;
     private static Gson gson;
 
@@ -30,9 +31,12 @@ public class NckuReportStorage {
 
     public CategoryResponse getCategory() {
 
-        SharedPreferences sp = c.getSharedPreferences(StorageConstants.SP_API, 0);
-        String categoryJson = sp.getString(StorageConstants.SP_CATEGORY, "");
-        return gson.fromJson(categoryJson, CategoryResponse.class);
+        if (mCategoryResponse == null) {
+            SharedPreferences sp = c.getSharedPreferences(StorageConstants.SP_API, 0);
+            String categoryJson = sp.getString(StorageConstants.SP_CATEGORY, "");
+            mCategoryResponse = gson.fromJson(categoryJson, CategoryResponse.class);
+        }
+        return mCategoryResponse;
     }
 
     public void saveCategory(CategoryResponse category) {
@@ -42,5 +46,4 @@ public class NckuReportStorage {
         editor.putString("category", gson.toJson(category));
         editor.apply();
     }
-
 }

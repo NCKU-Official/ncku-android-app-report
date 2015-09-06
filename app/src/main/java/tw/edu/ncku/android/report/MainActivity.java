@@ -51,8 +51,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted() {
 
-                        NavMenuManager.setupMenu(MainActivity.this,
-                                mNckuReportStorage, navigationView);
+                        // Reload in case if any update
+                        NavMenuManager.setupMenu(
+                                MainActivity.this,
+                                mNckuReportStorage.getCategory(),
+                                navigationView);
                     }
 
                     @Override
@@ -70,12 +73,14 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Initializing NavigationView
+        // Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
-        NavMenuManager.setupMenu(this, mNckuReportStorage, navigationView);
+        // Set up nav items
+        CategoryResponse mCategoryResponse = mNckuReportStorage.getCategory();
+        NavMenuManager.setupMenu(this, mCategoryResponse, navigationView);
 
-        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
+        // Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
@@ -147,14 +152,25 @@ public class MainActivity extends AppCompatActivity {
             toolbar.getMenu().clear();
             toolbar.getMenu().add("test");
 
-            MenuItem mi = toolbar.getMenu().add(category.getName());
+            // View report action
+            MenuItem viewItem = toolbar.getMenu().add(Constants.MENU_ITEM_VIEW_REPORT);
+            viewItem.setIcon(R.drawable.ic_action_action_home);
+            viewItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            Intent viewIntent = new Intent();
+            viewIntent.setClass(this, MainActivity.class);
+            viewIntent.setAction(Constants.INTENT_ACTION_MENU_VIEW);
+            viewIntent.putExtra(Constants.INTENT_EXTRA_CATEGORY, gson.toJson(category));
+            viewItem.setIntent(viewIntent);
+
+            // New report action
+            MenuItem newItem = toolbar.getMenu().add(Constants.MENU_ITEM_NEW_REPORT);
+            newItem.setIcon(R.drawable.ic_action_content_add);
+            newItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             Intent i = new Intent();
             i.setClass(this, MainActivity.class);
             i.setAction(Constants.INTENT_ACTION_MENU_CREATE);
             i.putExtra(Constants.INTENT_EXTRA_CATEGORY, gson.toJson(category));
-            mi.setIntent(i);
-            mi.setIcon(R.drawable.ic_action_content_add);
-            mi.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            newItem.setIntent(i);
         } else if (intentAction.compareTo(Constants.INTENT_ACTION_MENU_CREATE) == 0) {
 
             String category_json = intent.getStringExtra(Constants.INTENT_EXTRA_CATEGORY);
@@ -165,6 +181,22 @@ public class MainActivity extends AppCompatActivity {
             ContentFragment fragment = new ContentFragment();
             Bundle b = new Bundle();
             b.putString(Constants.INTENT_EXTRA_CATEGORY_VIEW_URL, category.getAction().getCreate());
+            fragment.setArguments(b);
+
+            // do fragment transaction
+            android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment);
+            fragmentTransaction.commit();
+        } else if(intentAction.compareTo(Constants.INTENT_ACTION_MENU_VIEW) == 0) {
+
+            String category_json = intent.getStringExtra(Constants.INTENT_EXTRA_CATEGORY);
+            Gson gson = new Gson();
+            Category category = gson.fromJson(category_json, Category.class);
+
+            // set url for webview
+            ContentFragment fragment = new ContentFragment();
+            Bundle b = new Bundle();
+            b.putString(Constants.INTENT_EXTRA_CATEGORY_VIEW_URL, category.getAction().getView());
             fragment.setArguments(b);
 
             // do fragment transaction
@@ -191,15 +223,6 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        Log.d("Main optional menu", String.valueOf(id));
-        Log.d("Main optional menu", (String) item.getTitle());
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 }

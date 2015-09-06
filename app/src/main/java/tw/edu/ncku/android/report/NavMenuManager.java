@@ -11,17 +11,20 @@ import com.google.gson.Gson;
 import java.util.List;
 
 import tw.edu.ncku.android.report.client.model.Category;
-import tw.edu.ncku.android.report.storage.NckuReportStorage;
+import tw.edu.ncku.android.report.client.model.CategoryResponse;
 
 public class NavMenuManager {
 
-    public static void setupMenu(Context ctx, NckuReportStorage s, NavigationView nav) {
+    public static void setupMenu(Context ctx, CategoryResponse categoryResponse, NavigationView nav) {
+
+        // if app start-up first time
+        if(categoryResponse == null) return;
 
         Gson gson = new Gson();
         Menu menu = nav.getMenu();
         menu.clear();
 
-        List<Category> categories = s.getCategory().getData();
+        List<Category> categories = categoryResponse.getData();
 
         for (Category category : categories) {
             // set menu item name
