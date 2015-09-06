@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
             toolbar.setSubtitle(category.getName());
 
             // Action menu:
+            toolbar.getMenu().clear();
+
             // View report action
             MenuItem viewItem = toolbar.getMenu().add(Constants.MENU_ITEM_VIEW_REPORT);
             viewItem.setIcon(R.drawable.ic_action_action_home);
