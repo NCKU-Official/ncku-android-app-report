@@ -1,21 +1,27 @@
 package tw.edu.ncku.android.report;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import tw.edu.ncku.android.report.client.NckuReportService;
+import tw.edu.ncku.android.report.client.model.Category;
 import tw.edu.ncku.android.report.client.model.CategoryResponse;
 import tw.edu.ncku.android.report.storage.NckuReportStorage;
 
@@ -47,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted() {
 
+                        NavMenuManager.setupMenu(MainActivity.this,
+                                mNckuReportStorage, navigationView);
                     }
 
                     @Override
@@ -67,13 +75,14 @@ public class MainActivity extends AppCompatActivity {
         //Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
+        NavMenuManager.setupMenu(this, mNckuReportStorage, navigationView);
+
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-
 
                 //Checking if the item is in checked state or not, if not make it in checked state
                 if (menuItem.isChecked()) menuItem.setChecked(false);
@@ -82,22 +91,15 @@ public class MainActivity extends AppCompatActivity {
                 //Closing drawer on item click
                 drawerLayout.closeDrawers();
 
-
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
 
-
                     //Replacing the main content with ContentFragment Which is our Inbox View;
                     case R.id.inbox:
-                        Toast.makeText(getApplicationContext(), "Inbox Selected", Toast.LENGTH_SHORT).show();
-                        ContentFragment fragment = new ContentFragment();
-                        android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.frame, fragment);
-                        fragmentTransaction.commit();
                         return true;
                     default:
-                        Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
-                        return true;
+                        Toast.makeText(getApplicationContext(), "custom chekced", Toast.LENGTH_SHORT).show();
+                        return false;
 
                 }
             }
@@ -126,16 +128,49 @@ public class MainActivity extends AppCompatActivity {
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
-
-
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onNewIntent(Intent intent) {
+
+        super.onNewIntent(intent);
+
+        String intentAction = intent.getAction();
+        if (intentAction.compareTo(Constants.INTENT_ACTION_MENU_CLICK) == 0) {
+
+            String category_json = intent.getStringExtra(Constants.INTENT_EXTRA_CATEGORY);
+            Log.d("Main new intent", category_json);
+            Gson gson = new Gson();
+            Category category = gson.fromJson(category_json, Category.class);
+
+            Toast.makeText(getApplicationContext(), "Inbox Selected", Toast.LENGTH_SHORT).show();
+
+            // set url for webview
+            ContentFragment fragment = new ContentFragment();
+            Bundle b = new Bundle();
+            b.putString(Constants.INTENT_EXTRA_CATEGORY_VIEW_URL, category.getAction().getView());
+            fragment.setArguments(b);
+
+            // do fragment transaction
+            android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment);
+            fragmentTransaction.commit();
+        }
     }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        // TODO: set action here
+        menu.add("jfoejfweojf");
+        return super.onCreatePanelMenu(featureId, menu);
+    }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

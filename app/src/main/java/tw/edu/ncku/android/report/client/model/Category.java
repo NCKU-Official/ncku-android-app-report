@@ -1,5 +1,6 @@
 package tw.edu.ncku.android.report.client.model;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Category {
@@ -7,7 +8,7 @@ public class Category {
     private int id;
     private int order;
     private String name;
-    private List<CategoryAction> action;
+    private CategoryAction action;
     private String created_at;
     private String updated_at;
 
@@ -35,11 +36,11 @@ public class Category {
         this.name = name;
     }
 
-    public List<CategoryAction> getAction() {
+    public CategoryAction getAction() {
         return action;
     }
 
-    public void setAction(List<CategoryAction> action) {
+    public void setAction(CategoryAction action) {
         this.action = action;
     }
 
