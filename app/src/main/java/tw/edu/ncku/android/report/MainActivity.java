@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             Gson gson = new Gson();
             Category category = gson.fromJson(category_json, Category.class);
 
-            // set url for webview
+            // set url for webView
             ContentFragment fragment = new ContentFragment();
             Bundle b = new Bundle();
             b.putString(Constants.INTENT_EXTRA_CATEGORY_VIEW_URL, category.getAction().getView());

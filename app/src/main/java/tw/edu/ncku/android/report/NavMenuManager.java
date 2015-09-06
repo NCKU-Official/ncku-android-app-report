@@ -26,6 +26,7 @@ public class NavMenuManager {
 
         List<Category> categories = categoryResponse.getData();
 
+        boolean first_item = true;
         for (Category category : categories) {
             // set menu item name
             MenuItem mi = menu.add(category.getName());
@@ -36,6 +37,10 @@ public class NavMenuManager {
             i.setAction(Constants.INTENT_NAV_ITEM_SELECTED);
             i.putExtra(Constants.INTENT_EXTRA_CATEGORY, gson.toJson(category));
             mi.setIntent(i);
+
+            // if first item, fire up the intent to show the web view
+            if(first_item) ctx.startActivity(i);
+            first_item = false;
         }
     }
 }
