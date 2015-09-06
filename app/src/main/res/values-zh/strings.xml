@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">成大回報</string>
+    <string name="description">回報系統</string>
+    <string name="username">成功大學</string>
+</resources>
