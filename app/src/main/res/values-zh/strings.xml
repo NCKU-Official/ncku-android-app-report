@@ -3,4 +3,5 @@
     <string name="app_name">成大回報</string>
     <string name="description">回報系統</string>
     <string name="username">成功大學</string>
+    <string name="action_create">新通報</string>
 </resources>

@@ -30,7 +30,7 @@ public class NavMenuManager {
             // set intent
             Intent i = new Intent();
             i.setClass(ctx, MainActivity.class);
-            i.setAction(Constants.INTENT_ACTION_MENU_CLICK);
+            i.setAction(Constants.INTENT_NAV_ITEM_SELECTED);
             i.putExtra(Constants.INTENT_EXTRA_CATEGORY, gson.toJson(category));
             mi.setIntent(i);
         }

@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -90,18 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //Closing drawer on item click
                 drawerLayout.closeDrawers();
-
-                //Check to see which item was being clicked and perform appropriate action
-                switch (menuItem.getItemId()) {
-
-                    //Replacing the main content with ContentFragment Which is our Inbox View;
-                    case R.id.inbox:
-                        return true;
-                    default:
-                        Toast.makeText(getApplicationContext(), "custom chekced", Toast.LENGTH_SHORT).show();
-                        return false;
-
-                }
+                return false;
             }
         });
 
@@ -136,14 +123,11 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         String intentAction = intent.getAction();
-        if (intentAction.compareTo(Constants.INTENT_ACTION_MENU_CLICK) == 0) {
+        if (intentAction.compareTo(Constants.INTENT_NAV_ITEM_SELECTED) == 0) {
 
             String category_json = intent.getStringExtra(Constants.INTENT_EXTRA_CATEGORY);
-            Log.d("Main new intent", category_json);
             Gson gson = new Gson();
             Category category = gson.fromJson(category_json, Category.class);
-
-            Toast.makeText(getApplicationContext(), "Inbox Selected", Toast.LENGTH_SHORT).show();
 
             // set url for webview
             ContentFragment fragment = new ContentFragment();
@@ -155,22 +139,52 @@ public class MainActivity extends AppCompatActivity {
             android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment);
             fragmentTransaction.commit();
+
+            // set title
+            toolbar.setSubtitle(category.getName());
+
+            // add action menu
+            toolbar.getMenu().clear();
+            toolbar.getMenu().add("test");
+
+            MenuItem mi = toolbar.getMenu().add(category.getName());
+            Intent i = new Intent();
+            i.setClass(this, MainActivity.class);
+            i.setAction(Constants.INTENT_ACTION_MENU_CREATE);
+            i.putExtra(Constants.INTENT_EXTRA_CATEGORY, gson.toJson(category));
+            mi.setIntent(i);
+            mi.setIcon(R.drawable.ic_action_content_add);
+            mi.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        } else if (intentAction.compareTo(Constants.INTENT_ACTION_MENU_CREATE) == 0) {
+
+            String category_json = intent.getStringExtra(Constants.INTENT_EXTRA_CATEGORY);
+            Gson gson = new Gson();
+            Category category = gson.fromJson(category_json, Category.class);
+
+            // set url for webview
+            ContentFragment fragment = new ContentFragment();
+            Bundle b = new Bundle();
+            b.putString(Constants.INTENT_EXTRA_CATEGORY_VIEW_URL, category.getAction().getCreate());
+            fragment.setArguments(b);
+
+            // do fragment transaction
+            android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment);
+            fragmentTransaction.commit();
         }
     }
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
-        // TODO: set action here
-        menu.add("jfoejfweojf");
         return super.onCreatePanelMenu(featureId, menu);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -179,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        Log.d("Main optional menu", String.valueOf(id));
+        Log.d("Main optional menu", (String) item.getTitle());
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
