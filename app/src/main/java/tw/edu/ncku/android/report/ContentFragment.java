@@ -18,6 +18,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +33,7 @@ public class ContentFragment extends Fragment {
     public static final int INPUT_FILE_REQUEST_CODE = 1;
 
     private WebView mWebView;
+    private ProgressBar pg;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
 
@@ -55,6 +57,14 @@ public class ContentFragment extends Fragment {
         }
 
         mWebView.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                pg.setProgress(100);
+                pg.setVisibility(View.GONE);
+                super.onPageFinished(view, url);
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if ((url != null) && ((url.startsWith("http://")) || (url.startsWith("https://")))) {
@@ -66,6 +76,15 @@ public class ContentFragment extends Fragment {
             }
         });
         mWebView.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                pg.setProgress(newProgress);
+                if(newProgress == 100) pg.setVisibility(View.GONE);
+                super.onProgressChanged(view, newProgress);
+            }
+
+            @Override
             public boolean onShowFileChooser(
                     WebView webView, ValueCallback<Uri[]> filePathCallback,
                     WebChromeClient.FileChooserParams fileChooserParams) {
@@ -115,6 +134,12 @@ public class ContentFragment extends Fragment {
         mWebView.loadUrl(url);
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        pg = (ProgressBar) view.findViewById(R.id.webViewProgress);
     }
 
     /**
